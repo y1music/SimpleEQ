@@ -95,6 +95,15 @@ void SimpleEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    
+    juce::dsp::ProcessSpec spec;
+    
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = 1;
+    spec.sampleRate = sampleRate;
+    
+    leftChain.prepare(spec);
+    rightChain.prepare(spec);
 }
 
 void SimpleEQAudioProcessor::releaseResources()
@@ -150,12 +159,15 @@ void SimpleEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
-    }
+    juce::dsp::AudioBlock<float> block(buffer);
+    auto leftBlock = block.getSingleChannelBlock(0);
+    auto rightBlock = block.getSingleChannelBlock(1);
+    
+    juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
+    juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
+    
+    leftChain.process(leftContext);
+    rightChain.process(rightContext);
 }
 
 //==============================================================================
@@ -198,21 +210,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::crea
     
     //Filter Parameters
     juce::StringArray filterValues;
-    for (int i = 1; i<=6; ++i) {
+    for (int i = 0; i<4; ++i) {
         juce::String str;
-        if (i<5) {
-            str << (6*i);
-            str << " dbB/oct";
-        } else if (i==5) {
-            str << (6*i+6);
-            str <<" dbB/oct";
-        } else {
-            str << (6*i+12);
-            str <<" dbB/oct";
-        }
+        str << (12 + 12*i);
+        str << " dbB/oct";
         filterValues.add(str);
     }
-    
     layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID("LC_slope", 1), "Low Cut Slope", filterValues, 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID("HC_slope", 1), "High Cut Slope", filterValues, 0));
     
