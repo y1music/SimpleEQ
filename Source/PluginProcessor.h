@@ -52,8 +52,22 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    
+    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+    juce::AudioProcessorValueTreeState apvts{*this, nullptr, "Parameters", createParameterLayout()};
 
 private:
+    //==============================================================================
+    /*
+    juce::AudioParameterFloat* LC_freq;
+    juce::AudioParameterFloat* HC_freq;
+    juce::AudioParameterFloat* PD_freq;
+    juce::AudioParameterFloat* PD_gain;
+    juce::AudioParameterFloat* PD_q;
+    juce::AudioParameterChoice* LC_slope;
+    juce::AudioParameterChoice* HC_slope;
+     */
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleEQAudioProcessor)
 };

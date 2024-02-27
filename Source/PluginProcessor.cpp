@@ -166,7 +166,8 @@ bool SimpleEQAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* SimpleEQAudioProcessor::createEditor()
 {
-    return new SimpleEQAudioProcessorEditor (*this);
+    //return new SimpleEQAudioProcessorEditor (*this);
+    return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
@@ -181,6 +182,41 @@ void SimpleEQAudioProcessor::setStateInformation (const void* data, int sizeInBy
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::createParameterLayout() {
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    
+    //Frequency Parameters
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("LC_freq", 1), "Low Cut Frequency", juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 1.0f), 120.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("HC_freq", 1), "High Cut Frequency", juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 1.f), 20000.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("PD_freq", 1), "Peak/Dip Frequency", juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 1.0f), 300.0f));
+    
+    //Parametric Parameters
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("PD_gain", 1), "Peak/Dip Gain", juce::NormalisableRange<float>(-24.0f, 24.0f, 0.1f, 1.0f), 0.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("PD_q", 1), "Peak/Dip Q", juce::NormalisableRange<float>(0.1f, 24.0f, 0.01f, 1.0f), 1.0f));
+    
+    //Filter Parameters
+    juce::StringArray filterValues;
+    for (int i = 1; i<=6; ++i) {
+        juce::String str;
+        if (i<5) {
+            str << (6*i);
+            str << " dbB/oct";
+        } else if (i==5) {
+            str << (6*i+6);
+            str <<" dbB/oct";
+        } else {
+            str << (6*i+12);
+            str <<" dbB/oct";
+        }
+        filterValues.add(str);
+    }
+    
+    layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID("LC_slope", 1), "Low Cut Slope", filterValues, 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID("HC_slope", 1), "High Cut Slope", filterValues, 0));
+    
+    return layout;
 }
 
 //==============================================================================
