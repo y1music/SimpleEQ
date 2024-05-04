@@ -76,6 +76,7 @@ private:
     using Filter = juce::dsp::IIR::Filter<float>;
     using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
     using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
+    using FIlter2 = juce::dsp::ProcessorChain<Filter>;
     
     MonoChain leftChain, rightChain;
     
