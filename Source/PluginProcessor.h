@@ -90,59 +90,44 @@ private:
     using Coefficients = Filter::CoefficientsPtr;
     static void updateCoefficients(Coefficients& old, const Coefficients& replacements);
     
+    template<int Index, typename ChainType, typename CoefficientType>
+    void updateSwitchCase(ChainType& chain, const CoefficientType& coefficients) {
+        updateCoefficients(chain.template get<Index>().coefficients, coefficients[Index]);
+        chain.template setBypassed<Index>(false);
+    }
+    
     template <typename ChainType, typename CoefficientType>
-    void updateCutFilter(ChainType& leftLC, const CoefficientType& cutCoefficients, const ChainSettings& chainSettings) {
+    void updateCutFilter(ChainType& leftLC, const CoefficientType& cutCoefficients, const Slope& lcSlope) {
         leftLC.template setBypassed<0>(true);
         leftLC.template setBypassed<1>(true);
         leftLC.template setBypassed<2>(true);
         leftLC.template setBypassed<3>(true);
-        switch(chainSettings.lcSlope) {
-            case Slope_12: {
-                *leftLC.template get<0>().coefficients = *cutCoefficients[0];
-                leftLC.template setBypassed<0>(false);
-            }
-            break;
-            case Slope_24: {
-                *leftLC.template get<0>().coefficients = *cutCoefficients[0];
-                leftLC.template setBypassed<0>(false);
-                *leftLC.template get<1>().coefficients = *cutCoefficients[1];
-                leftLC.template setBypassed<1>(false);
+        
+        switch(lcSlope) {
+            case Slope_48: {
+                updateSwitchCase<3>(leftLC, cutCoefficients);
             }
             break;
             case Slope_36: {
-                *leftLC.template get<0>().coefficients = *cutCoefficients[0];
-                leftLC.template setBypassed<0>(false);
-                *leftLC.template get<1>().coefficients = *cutCoefficients[1];
-                leftLC.template setBypassed<1>(false);
-                *leftLC.template get<2>().coefficients = *cutCoefficients[2];
-                leftLC.template setBypassed<2>(false);
+                updateSwitchCase<2>(leftLC, cutCoefficients);
             }
             break;
-            case Slope_48: {
-                *leftLC.template get<0>().coefficients = *cutCoefficients[0];
-                leftLC.template setBypassed<0>(false);
-                *leftLC.template get<1>().coefficients = *cutCoefficients[1];
-                leftLC.template setBypassed<1>(false);
-                *leftLC.template get<2>().coefficients = *cutCoefficients[2];
-                leftLC.template setBypassed<2>(false);
-                *leftLC.template get<3>().coefficients = *cutCoefficients[3];
-                leftLC.template setBypassed<3>(false);
+            case Slope_24: {
+                updateSwitchCase<1>(leftLC, cutCoefficients);
+            }
+            break;
+            case Slope_12: {
+                updateSwitchCase<0>(leftLC, cutCoefficients);
             }
             break;
         }
     }
     
+    void updateLCFilters (const ChainSettings& chainSettings);
+    void updateHCFilters (const ChainSettings& chainSettings);
+    void updateAllFilters ();
+    
     //==============================================================================
-    /*
-    juce::AudioParameterFloat* LC_freq;
-    juce::AudioParameterFloat* HC_freq;
-    juce::AudioParameterFloat* PD_freq;
-    juce::AudioParameterFloat* PD_gain;
-    juce::AudioParameterFloat* PD_q;
-    juce::AudioParameterChoice* LC_slope;
-    juce::AudioParameterChoice* HC_slope;
-     */
-
-    //==============================================================================
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleEQAudioProcessor)
 };
