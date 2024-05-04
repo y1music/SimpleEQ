@@ -86,6 +86,52 @@ private:
         HighCut
     };
     
+    void updatePeakFilter(const ChainSettings& chainSettings);
+    using Coefficients = Filter::CoefficientsPtr;
+    static void updateCoefficients(Coefficients& old, const Coefficients& replacements);
+    
+    template <typename ChainType, typename CoefficientType>
+    void updateCutFilter(ChainType& leftLC, const CoefficientType& cutCoefficients, const ChainSettings& chainSettings) {
+        leftLC.template setBypassed<0>(true);
+        leftLC.template setBypassed<1>(true);
+        leftLC.template setBypassed<2>(true);
+        leftLC.template setBypassed<3>(true);
+        switch(chainSettings.lcSlope) {
+            case Slope_12: {
+                *leftLC.template get<0>().coefficients = *cutCoefficients[0];
+                leftLC.template setBypassed<0>(false);
+            }
+            break;
+            case Slope_24: {
+                *leftLC.template get<0>().coefficients = *cutCoefficients[0];
+                leftLC.template setBypassed<0>(false);
+                *leftLC.template get<1>().coefficients = *cutCoefficients[1];
+                leftLC.template setBypassed<1>(false);
+            }
+            break;
+            case Slope_36: {
+                *leftLC.template get<0>().coefficients = *cutCoefficients[0];
+                leftLC.template setBypassed<0>(false);
+                *leftLC.template get<1>().coefficients = *cutCoefficients[1];
+                leftLC.template setBypassed<1>(false);
+                *leftLC.template get<2>().coefficients = *cutCoefficients[2];
+                leftLC.template setBypassed<2>(false);
+            }
+            break;
+            case Slope_48: {
+                *leftLC.template get<0>().coefficients = *cutCoefficients[0];
+                leftLC.template setBypassed<0>(false);
+                *leftLC.template get<1>().coefficients = *cutCoefficients[1];
+                leftLC.template setBypassed<1>(false);
+                *leftLC.template get<2>().coefficients = *cutCoefficients[2];
+                leftLC.template setBypassed<2>(false);
+                *leftLC.template get<3>().coefficients = *cutCoefficients[3];
+                leftLC.template setBypassed<3>(false);
+            }
+            break;
+        }
+    }
+    
     //==============================================================================
     /*
     juce::AudioParameterFloat* LC_freq;
