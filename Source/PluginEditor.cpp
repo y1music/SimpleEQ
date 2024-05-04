@@ -11,7 +11,7 @@
 
 //==============================================================================
 SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p),peakFreqSliderAttachment(audioProcessor.apvts, "PD_freq", peakFreqSlider), peakQSliderAttachment(audioProcessor.apvts, "PD_q", peakQSlider), peakGainSliderAttachment(audioProcessor.apvts, "PD_gain", peakGainSlider), lcFreqSliderAttachment(audioProcessor.apvts, "LC_freq", lcFreqSlider), lcSlopeSliderAttachment(audioProcessor.apvts, "LC_slope", lcSlopeSlider), hcFreqSliderAttachment(audioProcessor.apvts, "HC_freq", hcFreqSlider), hcSlopeSliderAttachment(audioProcessor.apvts, "HC_slope", hcSlopeSlider)
+    : AudioProcessorEditor (&p), audioProcessor (p), peakFreqSlider(*audioProcessor.apvts.getParameter("PD_freq"), "Hz"), peakQSlider(*audioProcessor.apvts.getParameter("PD_q"), ""), peakGainSlider(*audioProcessor.apvts.getParameter("PD_gain"), "dB"), lcFreqSlider(*audioProcessor.apvts.getParameter("LC_freq"), "Hz"), lcSlopeSlider(*audioProcessor.apvts.getParameter("LC_slope"), "dB/Oct"), hcFreqSlider(*audioProcessor.apvts.getParameter("HC_freq"), "Hz"), hcSlopeSlider(*audioProcessor.apvts.getParameter("HC_slope"), "dB/Oct"), peakFreqSliderAttachment(audioProcessor.apvts, "PD_freq", peakFreqSlider), peakQSliderAttachment(audioProcessor.apvts, "PD_q", peakQSlider), peakGainSliderAttachment(audioProcessor.apvts, "PD_gain", peakGainSlider), lcFreqSliderAttachment(audioProcessor.apvts, "LC_freq", lcFreqSlider), lcSlopeSliderAttachment(audioProcessor.apvts, "LC_slope", lcSlopeSlider), hcFreqSliderAttachment(audioProcessor.apvts, "HC_freq", hcFreqSlider), hcSlopeSliderAttachment(audioProcessor.apvts, "HC_slope", hcSlopeSlider)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
@@ -29,12 +29,10 @@ SimpleEQAudioProcessorEditor::~SimpleEQAudioProcessorEditor()
 //==============================================================================
 void SimpleEQAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-    g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    using namespace juce;
+    
+    g.fillAll (Colour::fromRGB(38, 38, 38));
+    
 }
 
 void SimpleEQAudioProcessorEditor::resized()
