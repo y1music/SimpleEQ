@@ -220,8 +220,8 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts) {
     settings.hcSlope = static_cast<Slope>(apvts.getRawParameterValue("HC_slope")->load());
     
     settings.lcBypassed = apvts.getRawParameterValue("LC_bp")->load() > 0.5f;
-    settings.lcBypassed = apvts.getRawParameterValue("PD_bp")->load() > 0.5f;
-    settings.lcBypassed = apvts.getRawParameterValue("HC_bp")->load() > 0.5f;
+    settings.pdBypassed = apvts.getRawParameterValue("PD_bp")->load() > 0.5f;
+    settings.hcBypassed = apvts.getRawParameterValue("HC_bp")->load() > 0.5f;
     
     return settings;
 }
@@ -303,9 +303,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::crea
     layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID("LC_slope", 1), "Low Cut Slope", filterValues, 0));
     layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID("HC_slope", 1), "High Cut Slope", filterValues, 0));
     
-    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID("LC_bp", 1), "Low Cut Bypassed", true));
+    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID("LC_bp", 1), "Low Cut Bypassed", false));
     layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID("PD_bp", 1), "Peak Bypassed", false));
-    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID("HC_bp", 1), "High Cut Bypassed", true));
+    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID("HC_bp", 1), "High Cut Bypassed", false));
     
     return layout;
 }

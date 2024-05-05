@@ -86,6 +86,9 @@ private:
     
     juce::ToggleButton lcBypassButton, pdBypassButton, hcBypassButton;
     
+    using ButtonAttachment = APVTS::ButtonAttachment;
+    ButtonAttachment lcBypassButtonAtt, pdBypassButtonAtt, hcBypassButtonAtt;
+    
     std::vector<juce::Component*> getComps();
     
     MonoChain monoChain;
