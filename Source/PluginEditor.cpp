@@ -9,6 +9,50 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+void L_n_F::drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider&) {
+    using namespace juce;
+    
+    auto bounds = Rectangle<float>(x, y, width, height);
+    
+    g.setColour(Colour::fromRGB(224, 221, 213));
+    g.fillEllipse(bounds);
+    g.setColour(Colour::fromRGB(255, 254, 252));
+    g.drawEllipse(bounds, 2.f);
+    
+    auto centre = bounds.getCentre();
+    
+    Path p;
+    Rectangle<float> r;
+    r.setLeft(centre.getX()-2);
+    r.setRight(centre.getX()+2);
+    r.setTop(bounds.getY());
+    r.setBottom(centre.getY());
+    p.addRectangle(r);
+    
+    jassert(rotaryStartAngle < rotaryEndAngle);
+    
+    auto sliderAngRad = jmap(sliderPosProportional, 0.f, 1.f, rotaryStartAngle, rotaryEndAngle);
+    
+    p.applyTransform(AffineTransform().rotated(sliderAngRad, centre.getX(), centre.getY()));
+    g.fillPath(p);
+}
+
+void RotarySliderWithLabels::paint(juce::Graphics &g) {
+    using namespace juce;
+    
+    auto startAng = degreesToRadians(180.f + 45.f);
+    auto endAng = degreesToRadians(180.f - 45.f) + MathConstants<float>::twoPi;
+    auto range = getRange();
+    auto sliderBounds = getSliderBounds();
+    float sliderPosPropVar = jmap(getValue(), range.getStart(), range.getEnd(), 0.0, 1.0);
+    
+    getLookAndFeel().drawRotarySlider(g, sliderBounds.getX(), sliderBounds.getY(), sliderBounds.getWidth(), sliderBounds.getHeight(), sliderPosPropVar, startAng, endAng, *this);
+}
+
+juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const {
+    return getLocalBounds();
+}
+
 //==============================================================================
 SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p), peakFreqSlider(*audioProcessor.apvts.getParameter("PD_freq"), "Hz"), peakQSlider(*audioProcessor.apvts.getParameter("PD_q"), ""), peakGainSlider(*audioProcessor.apvts.getParameter("PD_gain"), "dB"), lcFreqSlider(*audioProcessor.apvts.getParameter("LC_freq"), "Hz"), lcSlopeSlider(*audioProcessor.apvts.getParameter("LC_slope"), "dB/Oct"), hcFreqSlider(*audioProcessor.apvts.getParameter("HC_freq"), "Hz"), hcSlopeSlider(*audioProcessor.apvts.getParameter("HC_slope"), "dB/Oct"), peakFreqSliderAttachment(audioProcessor.apvts, "PD_freq", peakFreqSlider), peakQSliderAttachment(audioProcessor.apvts, "PD_q", peakQSlider), peakGainSliderAttachment(audioProcessor.apvts, "PD_gain", peakGainSlider), lcFreqSliderAttachment(audioProcessor.apvts, "LC_freq", lcFreqSlider), lcSlopeSliderAttachment(audioProcessor.apvts, "LC_slope", lcSlopeSlider), hcFreqSliderAttachment(audioProcessor.apvts, "HC_freq", hcFreqSlider), hcSlopeSliderAttachment(audioProcessor.apvts, "HC_slope", hcSlopeSlider)
