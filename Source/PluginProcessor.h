@@ -21,6 +21,10 @@ struct ChainSettings {
     float lcFreq {0.0f}, hcFreq {0.0f};
     float peakFreq {0.0f}, peakDB_gain {0.0f}, peakQ {1.0f};
     Slope lcSlope {Slope::Slope_12}, hcSlope {Slope::Slope_12};
+    
+    bool lcBypassed = false;
+    bool pdBypassed = false;
+    bool hcBypassed = false;
 };
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);

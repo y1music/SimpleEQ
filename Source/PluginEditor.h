@@ -84,6 +84,8 @@ private:
     hcFreqSliderAttachment,
     hcSlopeSliderAttachment;
     
+    juce::ToggleButton lcBypassButton, pdBypassButton, hcBypassButton;
+    
     std::vector<juce::Component*> getComps();
     
     MonoChain monoChain;

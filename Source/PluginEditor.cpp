@@ -187,11 +187,13 @@ void SimpleEQAudioProcessorEditor::resized()
     
     auto lcArea = bounds.removeFromLeft(bounds.getWidth()*0.33);
     auto hcArea = bounds.removeFromRight(bounds.getWidth()*0.5);
+    lcBypassButton.setBounds(lcArea.removeFromTop(25));
     lcFreqSlider.setBounds(lcArea.removeFromTop(lcArea.getHeight()*0.5));
     lcSlopeSlider.setBounds(lcArea);
+    hcBypassButton.setBounds(hcArea.removeFromTop(25));
     hcFreqSlider.setBounds(hcArea.removeFromTop(hcArea.getHeight()*0.5));
     hcSlopeSlider.setBounds(hcArea);
-    
+    pdBypassButton.setBounds(bounds.removeFromTop(25));
     peakFreqSlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.33));
     peakQSlider.setBounds(bounds.removeFromTop(bounds.getHeight()*0.5));
     peakGainSlider.setBounds(bounds);
@@ -205,6 +207,10 @@ std::vector<juce::Component*> SimpleEQAudioProcessorEditor::getComps() {
         &lcFreqSlider,
         &lcSlopeSlider,
         &hcFreqSlider,
-        &hcSlopeSlider
+        &hcSlopeSlider,
+        
+        &lcBypassButton,
+        &pdBypassButton,
+        &hcBypassButton
     };
 }
